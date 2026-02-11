@@ -1,0 +1,221 @@
+using MusicStoreShowcase.Models;
+using Bogus;
+
+namespace MusicStoreShowcase.Services
+{
+    public class SongGeneratorService
+    {
+        private readonly LocaleService _localeService;
+
+        public SongGeneratorService(LocaleService localeService)
+        {
+            _localeService = localeService;
+        }
+
+        public List<Song> GenerateSongs(SongRequest request)
+        {
+            var songs = new List<Song>();
+            var localeData = _localeService.GetLocaleData(request.Locale);
+            
+            var startIndex = (request.Page - 1) * request.PageSize + 1;
+            
+            for (int i = 0; i < request.PageSize; i++)
+            {
+                var index = startIndex + i;
+                var combinedSeed = CombineSeed(request.Seed, index);
+                
+                var song = GenerateSong(index, combinedSeed, localeData, request.AverageLikes, request.Seed);
+                songs.Add(song);
+            }
+            
+            return songs;
+        }
+
+        private Song GenerateSong(int index, int seed, LocaleData localeData, double averageLikes, long baseSeed)
+        {
+            var faker = new Faker { Random = new Randomizer(seed) };
+            
+            var title = GenerateTitle(faker, localeData);
+            var artist = GenerateArtist(faker, localeData);
+            
+            var song = new Song
+            {
+                Index = index,
+                Title = title,
+                Artist = artist,
+                Album = GenerateAlbum(faker, localeData),
+                Genre = faker.PickRandom(localeData.Genres),
+                Likes = GenerateLikes(faker, averageLikes, index),
+                CoverUrl = $"/api/cover/{index}?title={Uri.EscapeDataString(title)}&artist={Uri.EscapeDataString(artist)}&seed={baseSeed}",
+                AudioUrl = $"/api/audio/{index}?seed={baseSeed}",
+                Review = GenerateReview(faker),
+                Lyrics = GenerateLyrics(faker)
+            };
+            
+            return song;
+        }
+
+        private string GenerateTitle(Faker faker, LocaleData localeData)
+        {
+            var prefix = faker.PickRandom(localeData.TitlePrefixes);
+            var adjective = faker.PickRandom(localeData.TitleAdjectives);
+            var noun = faker.PickRandom(localeData.TitleNouns);
+            
+            var templates = new[]
+            {
+                $"{prefix} {noun}",
+                $"{adjective} {noun}",
+                $"{prefix} {adjective} {noun}",
+                $"{noun}"
+            };
+            
+            return faker.PickRandom(templates);
+        }
+
+        private string GenerateArtist(Faker faker, LocaleData localeData)
+        {
+            var isBand = faker.Random.Bool();
+            
+            if (isBand)
+            {
+                var prefix = faker.PickRandom(localeData.BandPrefixes);
+                var noun = faker.PickRandom(localeData.BandNouns);
+                return $"{prefix} {noun}";
+            }
+            else
+            {
+                var firstName = faker.PickRandom(localeData.FirstNames);
+                var lastName = faker.PickRandom(localeData.LastNames);
+                return $"{firstName} {lastName}";
+            }
+        }
+
+        private string GenerateAlbum(Faker faker, LocaleData localeData)
+        {
+            var isSingle = faker.Random.Bool();
+            
+            if (isSingle)
+            {
+                return "Single";
+            }
+            
+            var word1 = faker.PickRandom(localeData.AlbumWords);
+            var word2 = faker.PickRandom(localeData.AlbumWords);
+            
+            return faker.Random.Bool() ? word1 : $"{word1} {word2}";
+        }
+
+        private int GenerateLikes(Faker faker, double averageLikes, int index)
+        {
+            if (averageLikes == 0) return 0;
+            if (averageLikes >= 10) return 10;
+            
+            // Используем более сложное распределение для разнообразия
+            // Создаем отдельный Random на основе индекса для независимости
+            var likesSeed = faker.Random.Int();
+            var likesRandom = new Random(likesSeed);
+            
+            // Вычисляем целую и дробную части
+            int baseLikes = (int)averageLikes;
+            double fractionalPart = averageLikes - baseLikes;
+            
+            // Используем нормальное распределение вокруг среднего значения
+            // для большего разнообразия
+            double variance = 0.5; // Дисперсия для разброса
+            double randomValue = likesRandom.NextDouble();
+            
+            int likes;
+            
+            if (fractionalPart == 0)
+            {
+                // Если среднее значение целое (например 5.0), добавляем небольшой разброс
+                double offset = (likesRandom.NextDouble() - 0.5) * 2 * variance;
+                likes = (int)Math.Round(baseLikes + offset);
+            }
+            else
+            {
+                // Для дробных значений используем вероятностное распределение
+                // Пример: для 4.4 -> 40% песен = 4, 60% песен = 5 (в среднем 4.4)
+                // Но добавляем разброс для разнообразия
+                
+                // Основная логика: бросаем "кубик" для определения базового значения
+                if (randomValue < fractionalPart)
+                {
+                    likes = baseLikes + 1;
+                }
+                else
+                {
+                    likes = baseLikes;
+                }
+                
+                // Добавляем небольшую вероятность отклонения для разнообразия
+                double deviationChance = likesRandom.NextDouble();
+                if (deviationChance < 0.15) // 15% шанс отклонения на ±1
+                {
+                    if (likesRandom.NextDouble() < 0.5)
+                    {
+                        likes = Math.Max(0, likes - 1);
+                    }
+                    else
+                    {
+                        likes = Math.Min(10, likes + 1);
+                    }
+                }
+            }
+            
+            // Ограничиваем диапазон 0-10
+            likes = Math.Max(0, Math.Min(10, likes));
+            
+            return likes;
+        }
+
+        private string GenerateReview(Faker faker)
+        {
+            var reviews = new[]
+            {
+                "An absolutely stunning performance that captures the essence of modern music.",
+                "A masterpiece that will stand the test of time.",
+                "Raw emotion and technical brilliance combined perfectly.",
+                "This track showcases exceptional talent and creativity.",
+                "A refreshing take on the genre with innovative production.",
+                "Powerful lyrics delivered with incredible vocal prowess.",
+                "A sonic journey that takes listeners to new heights.",
+                "Captivating from start to finish with memorable melodies."
+            };
+            
+            return faker.PickRandom(reviews);
+        }
+
+        private string GenerateLyrics(Faker faker)
+        {
+            var lines = new List<string>();
+            var phrases = new[]
+            {
+                "Every beat reminds me of you, tearing me apart",
+                "In the million suns that shine, you're the brightest star",
+                "At the break of dawn, you're all I want, no matter how far",
+                "Oh darling, I try to move on",
+                "Through the endless night, we find our way",
+                "Dancing in the moonlight, hearts on display",
+                "Whispers in the wind, calling your name",
+                "Lost in this moment, nothing feels the same",
+                "We were young and wild, chasing dreams",
+                "Now I'm standing here, breaking at the seams",
+                "Your love was like fire, burning so bright",
+                "Now I'm lost in darkness, searching for light"
+            };
+            
+            for (int i = 0; i < 8; i++)
+            {
+                lines.Add(faker.PickRandom(phrases));
+            }
+            
+            return string.Join("\n", lines);
+        }
+
+        private int CombineSeed(long baseSeed, int index)
+        {
+            return (int)((baseSeed * 31 + index) % int.MaxValue);
+        }
+    }
+}

@@ -1,0 +1,40 @@
+{
+  "locale": "en-US",
+  "titlePrefixes": ["The", "My", "Your", "Our", "Sweet", "Dark", "Broken", "Lost", "Wild", "New"],
+  "titleNouns": ["Love", "Heart", "Dream", "Night", "Story", "Memory", "Song", "Dance", "Fire", "Rain", "Star", "Moon", "Sun", "Sky", "Road", "Way", "Life", "Time", "World", "Soul"],
+  "titleAdjectives": ["Beautiful", "Lonely", "Happy", "Sad", "Fast", "Slow", "Big", "Small", "Long", "Short", "Old", "Young", "Good", "Bad", "Hot", "Cold"],
+  "firstNames": ["John", "Emma", "Michael", "Sarah", "David", "Lisa", "James", "Jennifer", "Robert", "Mary", "William", "Patricia", "Richard", "Linda", "Joseph", "Barbara"],
+  "lastNames": ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Anderson", "Taylor", "Thomas", "Moore", "Jackson"],
+  "bandPrefixes": ["The", "Big", "Little", "Hot", "Cool", "Wild", "Crazy", "Super", "Electric", "Sonic"],
+  "bandNouns": ["Stars", "Hearts", "Dreams", "Kings", "Queens", "Dragons", "Tigers", "Eagles", "Wolves", "Bears", "Lions", "Hawks"],
+  "albumWords": ["Paradise", "Revolution", "Echoes", "Shadows", "Lights", "Colors", "Visions", "Dreams", "Stories", "Memories", "Journey", "Destiny", "Forever", "Infinity"],
+  "genres": ["Rock", "Pop", "Jazz", "Blues", "Country", "Electronic", "Hip-Hop", "Classical", "Metal", "Folk", "R&B", "Reggae", "Dance", "House", "Indie"],
+  "reviews": [
+    "An absolutely stunning performance that captures the essence of modern music.",
+    "A masterpiece that will stand the test of time.",
+    "Raw emotion and technical brilliance combined perfectly.",
+    "This track showcases exceptional talent and creativity.",
+    "A refreshing take on the genre with innovative production.",
+    "Powerful lyrics delivered with incredible vocal prowess.",
+    "A sonic journey that takes listeners to new heights.",
+    "Captivating from start to finish with memorable melodies."
+  ],
+  "lyricsLines": [
+    "Every beat reminds me of you, tearing me apart",
+    "In the million suns that shine, you're the brightest star",
+    "At the break of dawn, you're all I want, no matter how far",
+    "Oh darling, I try to move on",
+    "Through the endless night, we find our way",
+    "Dancing in the moonlight, hearts on display",
+    "Whispers in the wind, calling your name",
+    "Lost in this moment, nothing feels the same",
+    "We were young and wild, chasing dreams",
+    "Now I'm standing here, breaking at the seams",
+    "Your love was like fire, burning so bright",
+    "Now I'm lost in darkness, searching for light",
+    "Time keeps moving forward, but I'm stuck in place",
+    "Every memory of you, I can't erase",
+    "The world keeps spinning, but without you here",
+    "I'm just a shadow of the person I was, my dear"
+  ]
+}

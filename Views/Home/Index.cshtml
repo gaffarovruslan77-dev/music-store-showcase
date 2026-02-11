@@ -1,8 +1,76 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Music Store Showcase";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="app">
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-item">
+            <label>Language</label>
+            <select id="localeSelect" class="form-select">
+                <option value="en-US">English (US)</option>
+                <option value="uk-UA">Українська (UA)</option>
+            </select>
+        </div>
+        
+        <div class="toolbar-item">
+            <label>Seed</label>
+            <div class="input-group">
+                <input type="number" id="seedInput" class="form-control" value="58933423">
+                <button class="btn btn-outline-secondary" id="randomSeedBtn" type="button">
+                    <i class="bi bi-shuffle"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="toolbar-item">
+            <label>Average Likes</label>
+            <input type="range" id="likesSlider" class="form-range" min="0" max="10" step="0.1" value="0">
+            <span id="likesValue">0</span>
+        </div>
+        
+        <div class="toolbar-item view-toggle">
+            <button id="tableViewBtn" class="btn btn-primary active">
+                <i class="bi bi-table"></i>
+            </button>
+            <button id="galleryViewBtn" class="btn btn-outline-primary">
+                <i class="bi bi-grid-3x3"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Table View -->
+    <div id="tableView" class="view-container">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th width="50">#</th>
+                    <th>Song</th>
+                    <th>Artist</th>
+                    <th>Album</th>
+                    <th>Genre</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Songs will be loaded here -->
+            </tbody>
+        </table>
+        
+        <nav>
+            <ul class="pagination justify-content-center" id="pagination">
+                <!-- Pagination will be loaded here -->
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Gallery View -->
+    <div id="galleryView" class="view-container" style="display: none;">
+        <div id="galleryContainer" class="gallery-grid">
+            <!-- Cards will be loaded here -->
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/app.js"></script>
+}
