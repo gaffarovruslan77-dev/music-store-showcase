@@ -9,7 +9,6 @@ let currentAudio = null;
 let currentAudioIndex = null;
 let expandedRows = new Set();
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     loadSongs();
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupEventListeners() {
-    // Locale change
     document.getElementById('localeSelect').addEventListener('change', function(e) {
         currentLocale = e.target.value;
         currentPage = 1;
@@ -28,7 +26,6 @@ function setupEventListeners() {
         loadSongs();
     });
     
-    // Seed change
     document.getElementById('seedInput').addEventListener('input', function(e) {
         const value = parseInt(e.target.value);
         if (!isNaN(value)) {
@@ -42,7 +39,6 @@ function setupEventListeners() {
         }
     });
     
-    // Random seed button
     document.getElementById('randomSeedBtn').addEventListener('click', function() {
         currentSeed = Math.floor(Math.random() * 1000000000);
         document.getElementById('seedInput').value = currentSeed;
@@ -54,7 +50,6 @@ function setupEventListeners() {
         loadSongs();
     });
     
-    // Average likes slider
     document.getElementById('likesSlider').addEventListener('input', function(e) {
         currentAverageLikes = parseFloat(e.target.value);
         document.getElementById('likesValue').textContent = currentAverageLikes.toFixed(1);
@@ -65,7 +60,6 @@ function setupEventListeners() {
         loadSongs();
     });
     
-    // View toggle
     document.getElementById('tableViewBtn').addEventListener('click', function() {
         switchView('table');
     });
@@ -171,7 +165,6 @@ function renderTable(songs) {
         row.addEventListener('click', () => toggleRowExpansion(row, song));
         tbody.appendChild(row);
         
-        // If row was previously expanded, re-create the details row
         if (expandedRows.has(song.index)) {
             createDetailsRow(row, song);
         }
@@ -183,19 +176,16 @@ function toggleRowExpansion(row, song) {
     const nextRow = row.nextElementSibling;
     
     if (nextRow && nextRow.classList.contains('expanded-row')) {
-        // Collapse
         nextRow.remove();
         row.classList.remove('expanded');
         expandedRows.delete(index);
         
-        // Stop audio if playing
         if (currentAudioIndex === index && currentAudio) {
             currentAudio.pause();
             currentAudio = null;
             currentAudioIndex = null;
         }
     } else {
-        // Expand
         row.classList.add('expanded');
         expandedRows.add(index);
         createDetailsRow(row, song);
@@ -257,7 +247,6 @@ function createDetailsRow(row, song) {
     
     row.after(expandedRow);
     
-    // Setup audio event listener for lyrics sync
     setTimeout(() => {
         const audio = document.getElementById(`audio-${song.index}`);
         if (audio) {
@@ -283,7 +272,6 @@ function toggleAudio(index, audioUrl) {
     const audio = document.getElementById(`audio-${index}`);
     const playBtn = document.getElementById(`play-btn-${index}`);
     
-    // Stop other audio if playing
     if (currentAudio && currentAudioIndex !== index) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -346,14 +334,12 @@ function syncLyrics(songIndex, currentTime, duration) {
     const lines = lyricsDiv.querySelectorAll('.lyrics-line');
     const totalLines = lines.length;
     
-    // Calculate which line should be active based on playback progress
     const progress = currentTime / duration;
     const activeLineIndex = Math.floor(progress * totalLines);
     
     lines.forEach((line, i) => {
         if (i === activeLineIndex) {
             line.classList.add('active');
-            // Smooth scroll to active line
             if (i > 2) {
                 line.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -394,7 +380,6 @@ function renderPagination() {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';
     
-    // Previous button
     const prevLi = document.createElement('li');
     prevLi.classList.add('page-item');
     if (currentPage === 1) prevLi.classList.add('disabled');
@@ -408,7 +393,6 @@ function renderPagination() {
     });
     pagination.appendChild(prevLi);
     
-    // Page numbers
     const maxPages = 10;
     const startPage = Math.max(1, currentPage - 2);
     const endPage = Math.min(maxPages, currentPage + 2);
@@ -426,7 +410,6 @@ function renderPagination() {
         pagination.appendChild(li);
     }
     
-    // Next button
     const nextLi = document.createElement('li');
     nextLi.classList.add('page-item');
     if (currentPage >= maxPages) nextLi.classList.add('disabled');

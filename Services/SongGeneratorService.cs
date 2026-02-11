@@ -37,18 +37,26 @@ namespace MusicStoreShowcase.Services
             
             var title = GenerateTitle(faker, localeData);
             var artist = GenerateArtist(faker, localeData);
+            var album = GenerateAlbum(faker, localeData);
+            var genre = faker.PickRandom(localeData.Genres);
+            
+            var likesSeed = faker.Random.Int();
+            var likesFaker = new Faker { Random = new Randomizer(likesSeed) };
+            
+            var reviewSeed = faker.Random.Int();
+            var reviewFaker = new Faker { Random = new Randomizer(reviewSeed) };
             
             var song = new Song
             {
                 Index = index,
                 Title = title,
                 Artist = artist,
-                Album = GenerateAlbum(faker, localeData),
-                Genre = faker.PickRandom(localeData.Genres),
-                Likes = GenerateLikes(faker, averageLikes),
+                Album = album,
+                Genre = genre,
+                Likes = GenerateLikes(likesFaker, averageLikes),
                 CoverUrl = $"/api/cover/{index}?title={Uri.EscapeDataString(title)}&artist={Uri.EscapeDataString(artist)}&seed={baseSeed}",
                 AudioUrl = $"/api/audio/{index}?seed={baseSeed}",
-                Review = GenerateReview(faker, localeData),
+                Review = GenerateReview(reviewFaker, localeData),
                 Lyrics = GenerateLyrics(faker, localeData)
             };
             
@@ -107,25 +115,18 @@ namespace MusicStoreShowcase.Services
 
         private int GenerateLikes(Faker faker, double averageLikes)
         {
-            // Handle edge cases
             if (averageLikes == 0) return 0;
             if (averageLikes >= 10) return 10;
             
-            // Probabilistic implementation for fractional values
             int baseLikes = (int)Math.Floor(averageLikes);
             double fractionalPart = averageLikes - baseLikes;
             
             int likes = baseLikes;
             
-            // Add 1 more like based on fractional probability
             if (faker.Random.Double() < fractionalPart)
             {
                 likes++;
             }
-            
-            // No variance for exact integer values (per requirements)
-            // Example: averageLikes=5.0 should give exactly 5 likes for all songs
-            // Example: averageLikes=0.5 should give 0 or 1 with 50/50 probability
             
             return Math.Max(0, Math.Min(10, likes));
         }
@@ -139,7 +140,6 @@ namespace MusicStoreShowcase.Services
         {
             var lines = new List<string>();
             
-            // Generate 8 lines of lyrics
             for (int i = 0; i < 8; i++)
             {
                 lines.Add(faker.PickRandom(localeData.LyricsLines));
